@@ -6,6 +6,7 @@
 use std::sync::Arc;
 
 use aionui_ai_agent::{AgentRouterState, AgentService, RemoteAgentRouterState, RemoteAgentService};
+use aionui_analytics::{AnalyticsRouterState, service::AgentUsageService};
 use aionui_assistant::{AssistantRouterState, AssistantService, BuiltinAssistantRegistry};
 use aionui_auth::extract_token_from_ws_headers;
 use aionui_channel::ChannelRouterState;
@@ -64,6 +65,7 @@ pub struct ModuleStates {
     pub office: OfficeRouterState,
     pub shell: ShellRouterState,
     pub assistant: AssistantRouterState,
+    pub analytics: AnalyticsRouterState,
 }
 
 fn default_allowed_roots() -> Vec<std::path::PathBuf> {
@@ -140,6 +142,9 @@ pub async fn build_module_states(services: &AppServices) -> (ModuleStates, Chann
         office: build_office_state(services),
         shell: build_shell_state(services),
         assistant,
+        analytics: AnalyticsRouterState {
+            service: AgentUsageService::new(),
+        },
     };
 
     (states, channel_components)
